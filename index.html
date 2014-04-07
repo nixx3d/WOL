@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+    <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js'></script>
+    <script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/gsap/1.11.1/TweenMax.min.js'></script>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        var id = 'wol';
+        var proceed = true;
+        $('.list-item').addClass("disabled");
+        $('.list-item').each(function( index ) {
+            var target = $(this).find('.status');
+            TweenMax.to(target, 0.2, {
+                boxShadow: "0px 3px 15px rgba(255, 235, 0, 1)",
+                background: "#ffeb00"
+            });
+        });
+            if (proceed) {
+                //data to be sent to server
+                post_data = {
+                    'id': id
+                };
+
+                //Ajax post data to server
+                $.post('/wake/ping.php', post_data, function (data) {
+                    //alert('success: ' + data.length);
+                    //console.log(data);
+                    //load success      
+                    /*TweenMax.to(target, 0.2, {
+                        boxShadow: "0px 3px 15px rgba(145, 233, 0, 1)",
+                        background: "#91ff00"
+                    });*/
+                    var target = $('#container');
+                    TweenMax.to(target,1,{background: "#00ff00"});
+                    for(var i = 0; i < data.length; i++) {
+                    	var trgt = $('.list-item:nth-child('+(i+1)+')');
+                    	var target = trgt.find('.status');
+                    	//alert(data[i]);
+                    	if(data[i] == 'online') {
+                    		trgt.addClass('on');
+			            	TweenMax.to(target, 0.2, {
+		                        boxShadow: "0px 3px 15px rgba(145, 233, 0, 1)",
+		                        background: "#91ff00"
+		                    });
+                    	} else if(data[i] == 'offline') {
+                    		trgt.removeClass('on');
+                    		TweenMax.to(target, 0.2, {
+		                        boxShadow: "0px 3px 15px rgba(115, 115, 115, 1)",
+		                        background: "#737373"
+		                    });
+                    	}
+			        }
+
+                }, "json").fail(function (err) { //load any error data
+                    //alert('fail');
+                    /*TweenMax.to(target, 0.2, {
+                        boxShadow: "0px 3px 15px rgba(255, 0, 0, 1)",
+                        background: "#ff0000"
+                    });*/
+                    var target = $('#container');
+                    TweenMax.to(target,1,{background: "#ff0000"});
+                }, "json");
+                $('.list-item').removeClass("disabled");
+            }
+        
+        $('.list-item').on('click', function (e) {
+        	if($(this).hasClass('disabled')) {
+        		
+        	} else {
+	            var mac_addr = $(this).attr('value');
+	            var proceed = true;
+	            var target = $(this).find('.status');
+	            TweenMax.to(target, 0.2, {
+	                boxShadow: "0px 3px 15px rgba(255, 235, 0, 1)",
+	                background: "#ffeb00"
+	            });
+	            if (mac_addr === "") {
+	                TweenMax.to(target, 0.2, {
+	                    boxShadow: "0px 3px 15px rgba(0, 0, 255, 1)",
+	                    background: "#ff0000"
+	                });
+	                proceed = false;
+	            }
+	            if (proceed) {
+	                //data to be sent to server
+	                post_data = {
+	                    'macAddr': mac_addr
+	                };
+	
+	                //Ajax post data to server
+	                $.post('/wake/wakeonlan.php', post_data, function (data) {
+	                    //alert('success: ' + this);
+	                    //load success      
+	                    trgt.addClass('on');
+	                    TweenMax.to(target, 0.2, {
+	                        boxShadow: "0px 3px 15px rgba(145, 233, 0, 1)",
+	                        background: "#91ff00"
+	                    });
+	
+	                }).fail(function (err) { //load any error data
+	                    //alert('fail');
+	                    trgt.removeClass('on');
+	                    TweenMax.to(target, 0.2, {
+	                        boxShadow: "0px 3px 15px rgba(255, 0, 0, 1)",
+	                        background: "#ff0000"
+	                    });
+	                });
+	            }
+        	}
+        });
+        $('#reset').click(function() {
+		    location.reload();
+		});
+      });
+    </script>
+    <style type="text/css">
+    	* {
+    		-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+    	}
+      html, body {
+          width:100%;
+          height:100%;
+          padding:0;
+          margin:0;
+		  color: #939393;
+		  font-family: 'Roboto', sans-serif;
+          font-size: 22px;
+          font-weight:300;
+		  background-color: #000000;
+		  overflow: hidden;
+      }
+      .grayscale {
+      	filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+	    filter: gray;
+	    -webkit-filter: grayscale(100%);
+      }
+      #title {text-align:center;line-height:70px;}
+      //#reset {position:absolute;right:0;height:60px;width:60px;background:url('icon.png') no-repeat center center;top: 0;background-size: 70%;cursor:pointer;}
+      #container {
+          position:absolute;
+          width:100%;
+          height:100%;
+          top:70px;
+          bottom:0;
+      }
+      #list {
+          width:100%;
+          height:100%;
+      }
+      .list-item {
+          position: relative;
+          float:left;
+          width:33.33%;
+          height:25%;
+          background:#444;
+          outline:3px solid black;
+          cursor: pointer;
+      }
+      .list-item.disabled {
+          opacity: 0.5;
+          cursor:auto;
+      }
+      .list-item:hover {
+          background:#111;
+      }
+      .list-item.on .title {
+          color: #CCCCCC;
+      }
+      .title {
+          position: absolute;
+          width: 100%;
+          //font-family: sans-serif;
+		  //font-weight:bold;
+          font-size: 33px;
+          color: #737373;
+          text-align: center;
+          bottom: 30%;
+      }
+      .status {
+          position:relative;
+          width:25%;
+          height:6px;
+          margin:auto;
+          top:88%;
+          background:#f2f2f2;
+          -moz-border-radius: 3px;
+          -webkit-border-radius: 3px;
+          border-radius: 3px;
+          -khtml-border-radius: 3px;
+      }
+      .list-item img {
+          width: 100%;
+          height: 100%;
+      }
+      .cssButton {
+			-moz-box-shadow:inset 0px -2px 2px 2px #363636;
+			-webkit-box-shadow:inset 0px -2px 2px 2px #363636;
+			box-shadow:inset 0px -2px 2px 2px #363636;
+			background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #222), color-stop(1, #222222));
+			background:-moz-linear-gradient(top, #363636 5%, #222222 100%);
+			background:-webkit-linear-gradient(top, #363636 5%, #222222 100%);
+			background:-o-linear-gradient(top, #363636 5%, #222222 100%);
+			background:-ms-linear-gradient(top, #363636 5%, #222222 100%);
+			background:linear-gradient(to bottom, #363636 5%, #222222 100%);
+			filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#333333', endColorstr='#222222',GradientType=0);
+			background-color:#333333;
+		}
+		.cssButton:hover {
+			background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #222222), color-stop(1, #222));
+			background:-moz-linear-gradient(top, #222222 5%, #363636 100%);
+			background:-webkit-linear-gradient(top, #222222 5%, #363636 100%);
+			background:-o-linear-gradient(top, #222222 5%, #363636 100%);
+			background:-ms-linear-gradient(top, #222222 5%, #363636 100%);
+			background:linear-gradient(to bottom, #222222 5%, #363636 100%);
+			filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#222222', endColorstr='#333333',GradientType=0);
+			background-color:#222222;
+		}
+		.cssButton:active {
+			position:relative;
+			top:1px;
+		}
+    </style>
+  </head>
+  <body>
+  	<div id="title">Wake On LAN</div>
+  	<div id="reset" class="grayscale"></div>
+    <div id="container">
+        <div id="list">
+            <div class="list-item cssButton" value="xx:xx:xx:xx:xx:xx">
+                <div class="title">WS</div>
+                <div class="status"></div>
+                <!--<img src="icon.png">-->
+            </div>
+			<div class="list-item cssButton" value="xx:xx:xx:xx:xx:xx">
+                <div class="title">3D</div>
+                <div class="status"></div>
+                <!--<img src="icon.png">-->
+            </div>
+            <div class="list-item cssButton" value="xx:xx:xx:xx:xx:xx">
+                <div class="title">TV</div>
+                <div class="status"></div>
+                <!--<img src="icon.png">-->
+            </div>
+            <div class="list-item cssButton" value="xx:xx:xx:xx:xx:xx">
+                <div class="title">01</div>
+                <div class="status"></div>
+                <!--<img src="icon.png">-->
+            </div>
+            <div class="list-item cssButton" value="xx:xx:xx:xx:xx:xx">
+                <div class="title">02</div>
+                <div class="status"></div>
+                <!--<img src="icon.png">-->
+            </div>
+            <div class="list-item cssButton" value="xx:xx:xx:xx:xx:xx">
+                <div class="title">03</div>
+                <div class="status"></div>
+                <!--<img src="icon.png">-->
+            </div>
+            <div class="list-item cssButton" value="xx:xx:xx:xx:xx:xx">
+                <div class="title">04</div>
+                <div class="status"></div>
+                <!--<img src="icon.png">-->
+            </div>
+            <div class="list-item cssButton" value="xx:xx:xx:xx:xx:xx">
+                <div class="title">05</div>
+                <div class="status"></div>
+                <!--<img src="icon.png">-->
+            </div>
+            <div class="list-item cssButton" value="xx:xx:xx:xx:xx:xx">
+                <div class="title">06</div>
+                <div class="status"></div>
+                <!--<img src="icon.png">-->
+            </div>
+            <div class="list-item cssButton" value="xx:xx:xx:xx:xx:xx">
+                <div class="title">07</div>
+                <div class="status"></div>
+                <!--<img src="icon.png">-->
+            </div>
+            <div class="list-item cssButton" value="xx:xx:xx:xx:xx:xx">
+                <div class="title">08</div>
+                <div class="status"></div>
+                <!--<img src="icon.png">-->
+            </div>
+			<div class="list-item cssButton" value="xx:xx:xx:xx:xx:xx">
+                <div class="title">09</div>
+                <div class="status"></div>
+                <!--<img src="icon.png">-->
+            </div>
+        </div>
+    </div>
+  </body>
+</html>
