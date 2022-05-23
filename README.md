@@ -8,8 +8,6 @@ Currently made to fit 12 computers in 1 screen.
 Can easily be turned into an Android app via http://appsgeyser.com/
 
 
-ScreenShot of android app > http://m.rckmn.nl/_/WOL.png
-
 Created by http://nuovo.com.br & http://m.rckmn.nl
 
 contributions are welcome to improve and expand functionality.
